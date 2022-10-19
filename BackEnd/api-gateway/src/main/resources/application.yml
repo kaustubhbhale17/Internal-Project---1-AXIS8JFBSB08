@@ -1,0 +1,67 @@
+server:
+  port: 9025
+
+spring:
+  application:
+    name: API-GATEWAY
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service_url:
+      default:zone: http://localhost:8761/eureka
+    instance:
+      hostname: localhost
+
+cloud:
+  gateway:
+    routes:
+      - id: ADMIN-SERVICE
+        uri: lb://ADMIN-SERVICE
+        predicates:
+          - PATH=/admin/**
+        filters:
+          - name: CircuitBreaker
+            args:
+              name: ADMIN-SERVICE
+              fallbackUri: forward:/adminServiceFallback
+
+
+      - id: JOB-SERVICE
+        uri: lb://JOB-SERVICE
+        predicates:
+          - PATH=/job/**
+        filters:
+          - name: CircuitBreaker
+            args:
+              name: JOB-SERVICE
+              fallbackUri: forward:/jobServiceFallback
+
+
+#      - id: USER-SERVICE
+#        uri: lb://USER-SERVICE
+#        predicates:
+#          - PATH=/user/**
+#        filters:
+#          -name: CircuitBreaker
+#          args:
+#            name: USER-SERVICE
+#            fallbackUri: forward:/userServiceFallback
+
+
+hystrix:
+  command:
+    fallbackCmd:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliSeconds: 4000
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
+

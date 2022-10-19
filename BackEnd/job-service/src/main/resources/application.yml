@@ -1,0 +1,24 @@
+server:
+  port: 6001
+
+spring:
+  data:
+    mongodb:
+      database: jobsDB
+      host: localhost
+      port: 27017
+  application:
+    name: JOB-SERVICE
+  mvc:
+    pathMatch:
+      matching-strategy: ANT_PATH_MATCHER
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+  service_url:
+    default:zone: http://localhost:8761/
+
